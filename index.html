@@ -28,32 +28,23 @@
             }
         }
     </script>
-    <<style>
+    <style>
         body {
             font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #fce7f3 0%, #e0e7ff 100%);
             min-height: 100vh;
-        }
-        /* กำหนดรูปพื้นหลังให้ออกมาแสดงผลแน่นอน */
-        .custom-bg {
-            background-image: url('https://i.ibb.co/dFhcG96/IMG-0093.jpg');
-            background-size: cover;
-            background-position: center;
         }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-   <body class="p-3 md:p-6 text-slate-800 flex justify-center items-start min-h-screen bg-slate-100">
+<body class="p-3 md:p-6 text-slate-800 flex justify-center items-start min-h-screen">
 
-    <!-- การ์ดครอบแอปหลัก ใส่คลาส custom-bg และใส่ฟิลเตอร์ให้กดและอ่านง่าย -->
-    <div class="max-w-md w-full custom-bg shadow-2xl rounded-3xl overflow-hidden border border-white/40 relative min-h-[600px]">
-        
-        <!-- แผ่นสีขาวจางๆ เพื่อไม่ให้รูปทับข้อความจนอ่านยาก -->
-        
-        <!-- เนื้อหาภายใน (Header, สวิตช์, รายการเช็ก) อยู่ใต้บรรทัดนี้ตามปกติ -->
+    <!-- การ์ด container หลัก ใส่รูปพื้นหลัง IMG-0093.jpg -->
+    <div class="w-full max-w-md bg-cover bg-center shadow-2xl rounded-3xl border border-white/50 overflow-hidden flex flex-col min-h-[840px] relative" style="background-image: url('https://i.ibb.co/dFhcG96/IMG-0093.jpg');">
         
         <!-- Header & Partner Switcher -->
-        <div class="bg-gradient-to-r from-pink-500 to-indigo-600 p-5 text-white relative">
+        <div class="bg-gradient-to-r from-pink-500/90 to-indigo-600/90 backdrop-blur-md p-5 text-white relative z-10">
             <div class="flex justify-between items-center mb-4">
                 <div class="flex items-center gap-2">
                     <img src="https://i.ibb.co/Ng16fnDw/IMG-4816.jpg" class="w-10 h-10 rounded-xl object-cover shadow-sm">
@@ -84,7 +75,7 @@
         </div>
 
         <!-- Navigation Tabs -->
-        <div class="flex border-b border-slate-100 bg-slate-50/50 text-xs font-medium text-slate-500">
+        <div class="flex border-b border-slate-200/60 bg-white/80 backdrop-blur-md text-xs font-medium text-slate-600 relative z-10">
             <button onclick="switchMainTab('daily')" id="tabDailyBtn" class="flex-1 py-3 text-center border-b-2 border-pink-500 text-pink-600 flex justify-center items-center gap-1.5 font-semibold">
                 <i class="fa-solid fa-calendar-check text-sm"></i> Daily Check
             </button>
@@ -96,12 +87,12 @@
             </button>
         </div>
 
-        <!-- Content Area -->
-        <div class="p-4 flex-1 overflow-y-auto">
+        <!-- Content Area: ใส่สีขาวโปร่งแสงเพื่อให้เห็นรูปหลังจางๆ แต่ตัวหนังสือคมชัด -->
+        <div class="p-4 flex-1 overflow-y-auto bg-white/85 backdrop-blur-md relative z-10">
 
             <!-- TAB 1: DAILY CHECKLIST -->
             <div id="tabDaily" class="space-y-4">
-                <div class="flex justify-between items-center bg-pink-50/60 p-3 rounded-2xl border border-pink-100">
+                <div class="flex justify-between items-center bg-pink-50/90 p-3 rounded-2xl border border-pink-100 shadow-sm">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-calendar text-pink-500"></i>
                         <input type="date" id="dailyDatePicker" onchange="loadDailyData()" class="bg-transparent font-medium text-sm text-slate-700 focus:outline-none cursor-pointer">
@@ -112,10 +103,10 @@
                 <div id="habitsContainer" class="space-y-2.5"></div>
 
                 <div class="pt-2">
-                    <button onclick="toggleAddHabitForm()" class="w-full py-2.5 border-2 border-dashed border-pink-200 hover:border-pink-400 text-pink-500 rounded-2xl text-xs font-medium flex items-center justify-center gap-2 transition">
+                    <button onclick="toggleAddHabitForm()" class="w-full py-2.5 border-2 border-dashed border-pink-300 hover:border-pink-500 bg-white/60 hover:bg-white text-pink-600 rounded-2xl text-xs font-medium flex items-center justify-center gap-2 transition shadow-sm">
                         <i class="fa-solid fa-plus"></i> เพิ่มหัวข้อเช็กลิสต์ประจำวัน
                     </button>
-                    <div id="addHabitForm" class="hidden mt-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
+                    <div id="addHabitForm" class="hidden mt-3 bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2 shadow-md">
                         <input type="text" id="newHabitTitle" placeholder="เช่น ทานวิตามิน, อ่านหนังสือ 15 นาที" class="w-full text-sm px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-pink-500">
                         <div class="flex gap-2">
                             <input type="text" id="newHabitIcon" placeholder="ไอคอน (เช่น 💊)" value="✨" class="w-20 text-sm px-3 py-2 rounded-xl border border-slate-300 focus:outline-none text-center">
@@ -124,8 +115,8 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-                    <label class="block text-xs font-medium text-slate-600 mb-1.5 flex items-center gap-1">
+                <div class="bg-white/90 p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <label class="block text-xs font-medium text-slate-700 mb-1.5 flex items-center gap-1">
                         <i class="fa-solid fa-pen-to-square text-indigo-500"></i> บันทึกประจำวัน (Memo)
                     </label>
                     <textarea id="dailyNoteInput" onchange="saveDailyNote()" rows="2" placeholder="วันนี้เป็นยังไงบ้าง?..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-400 resize-none bg-white"></textarea>
@@ -134,21 +125,21 @@
 
             <!-- TAB 2: QUOTA TRACKER -->
             <div id="tabQuota" class="space-y-4 hidden">
-                <div class="flex justify-between items-center bg-indigo-50/60 p-3 rounded-2xl border border-indigo-100">
+                <div class="flex justify-between items-center bg-indigo-50/90 p-3 rounded-2xl border border-indigo-100 shadow-sm">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-chart-pie text-indigo-500"></i>
-                        <span class="text-xs font-medium text-slate-600">ประจำเดือน:</span>
+                        <span class="text-xs font-medium text-slate-700">ประจำเดือน:</span>
                     </div>
-                    <input type="month" id="quotaMonthPicker" onchange="loadQuotaData()" class="bg-white px-2.5 py-1 text-xs rounded-xl border border-indigo-200 font-medium text-indigo-600 focus:outline-none">
+                    <input type="month" id="quotaMonthPicker" onchange="loadQuotaData()" class="bg-white px-2.5 py-1 text-xs rounded-xl border border-indigo-200 font-medium text-indigo-600 focus:outline-none shadow-sm">
                 </div>
 
                 <div id="quotaCardsContainer" class="space-y-3"></div>
 
                 <div class="pt-2">
-                    <button onclick="toggleAddQuotaForm()" class="w-full py-2.5 border-2 border-dashed border-indigo-200 hover:border-indigo-400 text-indigo-600 rounded-2xl text-xs font-medium flex items-center justify-center gap-2 transition">
+                    <button onclick="toggleAddQuotaForm()" class="w-full py-2.5 border-2 border-dashed border-indigo-300 hover:border-indigo-500 bg-white/60 hover:bg-white text-indigo-600 rounded-2xl text-xs font-medium flex items-center justify-center gap-2 transition shadow-sm">
                         <i class="fa-solid fa-plus"></i> เพิ่มโควตาใหม่ประจำเดือน
                     </button>
-                    <div id="addQuotaForm" class="hidden mt-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
+                    <div id="addQuotaForm" class="hidden mt-3 bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2 shadow-md">
                         <input type="text" id="newQuotaTitle" placeholder="ชื่อโควตา เช่น ชานมไข่มุก, ดูซีรีส์" class="w-full text-sm px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-500">
                         <div class="grid grid-cols-3 gap-2">
                             <input type="text" id="newQuotaIcon" placeholder="ไอคอน 🧋" value="🧋" class="text-sm px-2 py-2 rounded-xl border border-slate-300 text-center">
@@ -169,25 +160,25 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-pink-50 p-3.5 rounded-2xl border border-pink-100 text-center">
+                    <div class="bg-pink-50/90 p-3.5 rounded-2xl border border-pink-100 text-center shadow-sm">
                         <span id="userASummaryAvatar" class="text-2xl block mb-1">👩‍❤️‍👨</span>
                         <h4 id="userASummaryName" class="font-bold text-sm text-slate-800">พี่เซ้น</h4>
                         <div class="mt-2 space-y-1 text-xs">
-                            <div class="bg-white py-1 px-2 rounded-lg text-pink-600 font-medium">Daily Checklist: <span id="userADailyScore">0</span> วัน</div>
-                            <div class="bg-white py-1 px-2 rounded-lg text-slate-600">โควตาที่ใช้ไป: <span id="userAQuotaUsed">0</span> ครั้ง</div>
+                            <div class="bg-white py-1 px-2 rounded-lg text-pink-600 font-medium border border-pink-100 shadow-xs">Daily Checklist: <span id="userADailyScore">0</span> วัน</div>
+                            <div class="bg-white py-1 px-2 rounded-lg text-slate-600 border border-slate-100 shadow-xs">โควตาที่ใช้ไป: <span id="userAQuotaUsed">0</span> ครั้ง</div>
                         </div>
                     </div>
-                    <div class="bg-indigo-50 p-3.5 rounded-2xl border border-indigo-100 text-center">
+                    <div class="bg-indigo-50/90 p-3.5 rounded-2xl border border-indigo-100 text-center shadow-sm">
                         <span id="userBSummaryAvatar" class="text-2xl block mb-1">👩‍❤️‍💋‍👨</span>
                         <h4 id="userBSummaryName" class="font-bold text-sm text-slate-800">น้องแก้ม</h4>
                         <div class="mt-2 space-y-1 text-xs">
-                            <div class="bg-white py-1 px-2 rounded-lg text-indigo-600 font-medium">Daily Checklist: <span id="userBDailyScore">0</span> วัน</div>
-                            <div class="bg-white py-1 px-2 rounded-lg text-slate-600">โควตาที่ใช้ไป: <span id="userBQuotaUsed">0</span> ครั้ง</div>
+                            <div class="bg-white py-1 px-2 rounded-lg text-indigo-600 font-medium border border-indigo-100 shadow-xs">Daily Checklist: <span id="userBDailyScore">0</span> วัน</div>
+                            <div class="bg-white py-1 px-2 rounded-lg text-slate-600 border border-slate-100 shadow-xs">โควตาที่ใช้ไป: <span id="userBQuotaUsed">0</span> ครั้ง</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl space-y-2">
+                <div class="bg-amber-50/90 border border-amber-200 p-4 rounded-2xl space-y-2 shadow-sm">
                     <h4 class="font-bold text-sm text-amber-800 flex items-center gap-1.5">
                         <i class="fa-solid fa-scroll text-amber-600"></i> กติกา & บทลงโทษประจำเดือน
                     </h4>
@@ -200,7 +191,7 @@
             </div>
         </div>
 
-        <div class="p-3 bg-slate-50 border-t border-slate-100 text-center text-[11px] text-slate-400">
+        <div class="p-3 bg-white/90 backdrop-blur-md border-t border-slate-200/60 text-center text-[11px] text-slate-500 font-medium relative z-10">
             Couple Tracker &bull; Cloud Realtime Database Enabled
         </div>
     </div>
@@ -239,11 +230,10 @@
 
     <script>
         // --- REALTIME CLOUD DATABASE CONFIG (Public Shared DB for Couples) ---
-       const firebaseConfig = {
-    databaseURL: "https://eiei-51849-default-rtdb.asia-southeast1.firebasedatabase.app"
-};
+        const firebaseConfig = {
+            databaseURL: "https://eiei-51849-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
  
-        
         // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
@@ -311,12 +301,14 @@
             localStorage.setItem('couple_tracker_user', userKey);
             refreshUI();
         }
-function renderAvatar(avatarStr) {
-    if (avatarStr && (avatarStr.startsWith('http://') || avatarStr.startsWith('https://'))) {
-        return `<img src="${avatarStr}" class="w-7 h-7 rounded-full object-cover inline-block">`;
-    }
-    return avatarStr || '👤';
-}
+
+        function renderAvatar(avatarStr) {
+            if (avatarStr && (avatarStr.startsWith('http://') || avatarStr.startsWith('https://'))) {
+                return `<img src="${avatarStr}" class="w-7 h-7 rounded-full object-cover inline-block">`;
+            }
+            return avatarStr || '👤';
+        }
+
         function updateProfileUI() {
             const userA = state.profiles?.userA || DEFAULT_STATE.profiles.userA;
             const userB = state.profiles?.userB || DEFAULT_STATE.profiles.userB;
@@ -370,12 +362,12 @@ function renderAvatar(avatarStr) {
             state.habits.forEach(habit => {
                 const isChecked = !!dayLog[habit.id];
                 const itemEl = document.createElement('div');
-                itemEl.className = `p-3.5 rounded-2xl border transition duration-200 flex items-center justify-between ${isChecked ? 'bg-pink-50/80 border-pink-200' : 'bg-slate-50 border-slate-200'}`;
+                itemEl.className = `p-3.5 rounded-2xl border transition duration-200 flex items-center justify-between shadow-xs ${isChecked ? 'bg-pink-50/90 border-pink-200' : 'bg-white/90 border-slate-200/80'}`;
 
                 itemEl.innerHTML = `
                     <div class="flex items-center gap-3">
                         <span class="text-xl">${habit.icon}</span>
-                        <span class="text-xs font-medium text-slate-700">${habit.title}</span>
+                        <span class="text-xs font-medium text-slate-800">${habit.title}</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" onchange="toggleHabit('${habit.id}', this.checked)" ${isChecked ? 'checked' : ''} class="sr-only peer">
@@ -468,27 +460,27 @@ function renderAvatar(avatarStr) {
                 else if (percent >= 75) barColor = 'bg-amber-500';
 
                 const card = document.createElement('div');
-                card.className = "bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2.5";
+                card.className = "bg-white/90 p-3.5 rounded-2xl border border-slate-200/80 space-y-2.5 shadow-xs";
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-2">
                             <span class="text-xl">${quota.icon}</span>
                             <div>
                                 <h4 class="font-medium text-xs text-slate-800">${quota.title}</h4>
-                                <p class="text-[11px] text-slate-400">เป้าหมายสูงสุด: ${quota.max} ${quota.unit}</p>
+                                <p class="text-[11px] text-slate-500">เป้าหมายสูงสุด: ${quota.max} ${quota.unit}</p>
                             </div>
                         </div>
-                        <div class="flex items-center bg-white rounded-xl border border-slate-200 p-1 gap-2 shadow-sm">
-                            <button onclick="updateQuotaVal('${quota.id}', -1)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center">-</button>
+                        <div class="flex items-center bg-slate-50 rounded-xl border border-slate-200 p-1 gap-2 shadow-xs">
+                            <button onclick="updateQuotaVal('${quota.id}', -1)" class="w-6 h-6 rounded-lg bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center border border-slate-200">-</button>
                             <span class="text-xs font-semibold text-slate-700 min-w-[24px] text-center">${currentVal}</span>
-                            <button onclick="updateQuotaVal('${quota.id}', 1)" class="w-6 h-6 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-xs flex items-center justify-center">+</button>
+                            <button onclick="updateQuotaVal('${quota.id}', 1)" class="w-6 h-6 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-xs flex items-center justify-center border border-indigo-100">+</button>
                         </div>
                     </div>
                     <div class="space-y-1">
                         <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
                             <div class="${barColor} h-2 rounded-full transition-all duration-300" style="width: ${percent}%"></div>
                         </div>
-                        <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-medium">
                             <span>ใช้ไปแล้ว ${currentVal} ${quota.unit}</span>
                             <span>${percent}%</span>
                         </div>
@@ -531,7 +523,7 @@ function renderAvatar(avatarStr) {
             toggleAddQuotaForm();
         }
 
-function updateSummaryData() {
+        function updateSummaryData() {
             const userA = state.profiles?.userA || DEFAULT_STATE.profiles.userA;
             const userB = state.profiles?.userB || DEFAULT_STATE.profiles.userB;
 
