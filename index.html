@@ -301,16 +301,20 @@
             localStorage.setItem('couple_tracker_user', userKey);
             refreshUI();
         }
-
+function renderAvatar(avatarStr) {
+    if (avatarStr && (avatarStr.startsWith('http://') || avatarStr.startsWith('https://'))) {
+        return `<img src="${avatarStr}" class="w-7 h-7 rounded-full object-cover inline-block">`;
+    }
+    return avatarStr || '👤';
+}
         function updateProfileUI() {
             const userA = state.profiles?.userA || DEFAULT_STATE.profiles.userA;
             const userB = state.profiles?.userB || DEFAULT_STATE.profiles.userB;
 
             document.getElementById('userANameDisplay').innerText = userA.name;
-            document.getElementById('userAAvatar').innerText = userA.avatar;
+            document.getElementById('userAAvatar').innerHTML = renderAvatar(userA.avatar);
             document.getElementById('userBNameDisplay').innerText = userB.name;
-            document.getElementById('userBAvatar').innerText = userB.avatar;
-
+            document.getElementById('userBAvatar').innerHTML = renderAvatar(userB.avatar);
             const btnA = document.getElementById('userATab');
             const btnB = document.getElementById('userBTab');
 
