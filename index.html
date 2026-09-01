@@ -521,14 +521,14 @@ function renderAvatar(avatarStr) {
             toggleAddQuotaForm();
         }
 
-        function updateSummaryData() {
+function updateSummaryData() {
             const userA = state.profiles?.userA || DEFAULT_STATE.profiles.userA;
             const userB = state.profiles?.userB || DEFAULT_STATE.profiles.userB;
 
             document.getElementById('userASummaryName').innerText = userA.name;
-            document.getElementById('userASummaryAvatar').innerText = userA.avatar;
+            document.getElementById('userASummaryAvatar').innerHTML = renderAvatar(userA.avatar);
             document.getElementById('userBSummaryName').innerText = userB.name;
-            document.getElementById('userBSummaryAvatar').innerText = userB.avatar;
+            document.getElementById('userBSummaryAvatar').innerHTML = renderAvatar(userB.avatar);
 
             let scoreA = 0, scoreB = 0;
             if (state.dailyLogs) {
