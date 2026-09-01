@@ -28,20 +28,29 @@
             }
         }
     </script>
-    <style>
+    <<style>
         body {
             font-family: 'Kanit', sans-serif;
-            background: linear-gradient(135deg, #fce7f3 0%, #e0e7ff 100%);
             min-height: 100vh;
+        }
+        /* กำหนดรูปพื้นหลังให้ออกมาแสดงผลแน่นอน */
+        .custom-bg {
+            background-image: url('https://i.ibb.co/dFhcG96/IMG-0093.jpg');
+            background-size: cover;
+            background-position: center;
         }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
-</head>
-<body class="p-3 md:p-6 text-slate-800 flex justify-center items-start min-h-screen bg-cover bg-center bg-fixed relative" style="background-image: url('https://i.ibb.co/dFhcG96/IMG-0093.jpg');">
-    <div class="fixed inset-0 bg-white/75 backdrop-blur-xs pointer-events-none -z-10"></div>
+</head><body class="p-3 md:p-6 text-slate-800 flex justify-center items-start min-h-screen bg-slate-100">
 
-    <div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/50 overflow-hidden flex flex-col min-h-[840px]">
+    <!-- การ์ดครอบแอปหลัก ใส่คลาส custom-bg และใส่ฟิลเตอร์ให้กดและอ่านง่าย -->
+    <div class="max-w-md w-full custom-bg shadow-2xl rounded-3xl overflow-hidden border border-white/40 relative min-h-[600px]">
+        
+        <!-- แผ่นสีขาวจางๆ เพื่อไม่ให้รูปทับข้อความจนอ่านยาก -->
+        <div class="absolute inset-0 bg-white/70 backdrop-blur-[2px] pointer-events-none z-0"></div>
+        
+        <!-- เนื้อหาภายใน (Header, สวิตช์, รายการเช็ก) อยู่ใต้บรรทัดนี้ตามปกติ -->
         
         <!-- Header & Partner Switcher -->
         <div class="bg-gradient-to-r from-pink-500 to-indigo-600 p-5 text-white relative">
