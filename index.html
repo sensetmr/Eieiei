@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" 
+    content="width=device-width, initial-scale=1.0">
+    <title>Couple Tracker - Daily & Quota</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Kanit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for rewards -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#db2777',
+                        },
+                        indigoBrand: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #fce7f3 0%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="p-3 md:p-6 text-slate-800 flex justify-center items-start min-h-screen">
+
+    <div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/50 overflow-hidden flex flex-col min-h-[840px]">
+        
+        <!-- Header & Partner Switcher -->
+        <div class="bg-gradient-to-r from-pink-500 to-indigo-600 p-5 text-white relative">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="bg-white/20 p-2 rounded-xl text-xl"><i class="fa-solid fa-heart text-pink-200"></i></span>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight">Couple Tracker</h1>
+                        <p class="text-xs text-pink-100 font-light">Daily Checklist & Quotas</p>
+                    </div>
+                </div>
+                <button onclick="openSettingsModal()" class="w-9 h-9 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition">
+                    <i class="fa-solid fa-gear text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Profile Selector Tabs -->
+            <div class="grid grid-cols-2 bg-black/20 p-1.5 rounded-2xl gap-1.5">
+                <button id="userATab" onclick="switchUser('userA')" class="py-2.5 px-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition duration-200">
+                    <span id="userAAvatar">👩‍❤️‍👨</span>
+                    <span id="userANameDisplay">พี่เซ้น (A)</span>
+                </button>
+                <button id="userBTab" onclick="switchUser('userB')" class="py-2.5 px-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition duration-200">
+                    <span id="userBAvatar">👩‍❤️‍💋‍👨</span>
+                    <span id="userBNameDisplay">น้องแก้ม (B)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex border-b border-slate-100 bg-slate-50/50 text-xs font-medium text-slate-500">
+            <button onclick="switchMainTab('daily')" id="tabDailyBtn" class="flex-1 py-3 text-center border-b-2 border-pink-500 text-pink-600 flex justify-center items-center gap-1.5">
+                <i class="fa-solid fa-calendar-check text-sm"></i> Daily Check
+            </button>
+            <button onclick="switchMainTab('quota')" id="tabQuotaBtn" class="flex-1 py-3 text-center border-b-2 border-transparent hover:text-slate-700 flex justify-center items-center gap-1.5">
+                <i class="fa-solid fa-cookie-bite text-sm"></i> Quota Tracker
+            </button>
+            <button onclick="switchMainTab('summary')" id="tabSummaryBtn" class="flex-1 py-3 text-center border-b-2 border-transparent hover:text-slate-700 flex justify-center items-center gap-1.5">
+                <i class="fa-solid fa-trophy text-sm"></i> สรุปผล
+            </button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="p-4 flex-1 overflow-y-auto">
+
+            <!-- TAB 1: DAILY CHECKLIST -->
+            <div id="tabDaily" class="space-y-4">
+                <!-- Date Bar -->
+                <div class="flex justify-between items-center bg-pink-50/60 p-3 rounded-2xl border border-pink-100">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-calendar text-pink-500"></i>
+                        <input type="date" id="dailyDatePicker" onchange="loadDailyData()" class="bg-transparent font-medium text-sm text-slate-700 focus:outline-none cursor-pointer">
+                    </div>
+                    <span class="text-xs text-pink-500 font-medium bg-white px-2.5 py-1 rounded-full border border-pink-200 shadow-sm" id="streakBadge">🔥 0 วันติด</span>
+                </div>
+
+                <!-- Habits List -->
+                <div id="habitsContainer" class="space-y-2.5">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Add Custom Daily Habit -->
+                <div class="pt-2">
+                    <button onclick="toggleAddHabitForm()" class="w-full py-2.5 border-2 border-dashed border-pink-200 hover:border-pink-400 text-pink-500 rounded-2xl text-xs font-medium flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-plus"></i> เพิ่มหัวข้อเช็กลิสต์ประจำวัน
+                    </button>
+                    <div id="addHabitForm" class="hidden mt-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
+                        <input type="text" id="newHabitTitle" placeholder="เช่น ทานวิตามิน, อ่านหนังสือ 15 นาที" class="w-full text-sm px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-pink-500">
+                        <div class="flex gap-2">
+                            <input type="text" id="newHabitIcon" placeholder="ไอคอน (เช่น 💊)" value="✨" class="w-20 text-sm px-3 py-2 rounded-xl border border-slate-300 focus:outline-none text-center">
+                            <button onclick="addNewHabit()" class="flex-1 bg-pink-500 text-white text-xs font-medium rounded-xl py-2 hover:bg-pink-600 transition">เพิ่มรายการ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Memo / Note -->
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                    <label class="block text-xs font-medium text-slate-600 mb-1.5 flex items-center gap-1">
+                        <i class="fa-solid fa-pen-to-square text-indigo-500"></i> บันทึกประจำวัน (Memo)
+                    </label>
+                    <textarea id="dailyNoteInput" onchange="saveDailyNote()" rows="2" placeholder="วันนี้เป็นยังไงบ้าง?..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-400 resize-none bg-white"></textarea>
+                </div>
+            </div>
+
+            <!-- TAB 2: QUOTA TRACKER -->
+            <div id="tabQuota" class="space-y-4 hidden">
+                <!-- Month Filter -->
+                <div class="flex justify-between items-center bg-indigo-50/60 p-3 rounded-2xl border border-indigo-100">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-indigo-500"></i>
+                        <span class="text-xs font-medium text-slate-600">ประจำเดือน:</span>
+                    </div>
+                    <input type="month" id="quotaMonthPicker" onchange="loadQuotaData()" class="bg-white px-2.5 py-1 text-xs rounded-xl border border-indigo-200 font-medium text-indigo-600 focus:outline-none">
+                </div>
+
+                <!-- Quota Cards Container -->
+                <div id="quotaCardsContainer" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Add Custom Quota Button -->
+                <div class="pt-2">
+                    <button onclick="toggleAddQuotaForm()" class="w-full py-2.5 border-2 border-dashed border-indigo-200 hover:border-indigo-400 text-indigo-600 rounded-2xl text-xs font-medium flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-plus"></i> เพิ่มโควตาใหม่ประจำเดือน
+                    </button>
+                    <div id="addQuotaForm" class="hidden mt-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
+                        <input type="text" id="newQuotaTitle" placeholder="ชื่อโควตา เช่น ชานมไข่มุก, ดูซีรีส์" class="w-full text-sm px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-500">
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="text" id="newQuotaIcon" placeholder="ไอคอน 🧋" value="🧋" class="text-sm px-2 py-2 rounded-xl border border-slate-300 text-center">
+                            <input type="number" id="newQuotaMax" placeholder="จำนวน Max" value="4" class="text-sm px-2 py-2 rounded-xl border border-slate-300 text-center">
+                            <input type="text" id="newQuotaUnit" placeholder="หน่วย เช่น แก้ว" value="ครั้ง" class="text-sm px-2 py-2 rounded-xl border border-slate-300 text-center">
+                        </div>
+                        <button onclick="addNewQuotaItem()" class="w-full bg-indigo-600 text-white text-xs font-medium rounded-xl py-2 hover:bg-indigo-700 transition">สร้างโควตาใหม่</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: SUMMARY & LEADERBOARD -->
+            <div id="tabSummary" class="space-y-4 hidden">
+                <div class="text-center bg-gradient-to-r from-pink-500 to-indigo-600 text-white p-5 rounded-3xl shadow-md">
+                    <span class="text-4xl block mb-1">🏆</span>
+                    <h3 class="font-bold text-lg">สรุปผล</h3>
+                    <p class="text-xs text-pink-100 font-light mt-0.5">ใครจะทำสำเร็จมากกว่ากันประจำเดือนนี้!</p>
+                </div>
+
+                <!-- Comparison Cards -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-pink-50 p-3.5 rounded-2xl border border-pink-100 text-center">
+                        <span id="userASummaryAvatar" class="text-2xl block mb-1">👩‍❤️‍👨</span>
+                        <h4 id="userASummaryName" class="font-bold text-sm text-slate-800">พี่เซ้น</h4>
+                        <div class="mt-2 space-y-1 text-xs">
+                            <div class="bg-white py-1 px-2 rounded-lg text-pink-600 font-medium">Daily Checklist: <span id="userADailyScore">0</span> วัน</div>
+                            <div class="bg-white py-1 px-2 rounded-lg text-slate-600">โควตาที่ใช้ไป: <span id="userAQuotaUsed">0</span> ครั้ง</div>
+                        </div>
+                    </div>
+                    <div class="bg-indigo-50 p-3.5 rounded-2xl border border-indigo-100 text-center">
+                        <span id="userBSummaryAvatar" class="text-2xl block mb-1">👩‍❤️‍💋‍👨</span>
+                        <h4 id="userBSummaryName" class="font-bold text-sm text-slate-800">น้องแก้ม</h4>
+                        <div class="mt-2 space-y-1 text-xs">
+                            <div class="bg-white py-1 px-2 rounded-lg text-indigo-600 font-medium">Daily Checklist: <span id="userBDailyScore">0</span> วัน</div>
+                            <div class="bg-white py-1 px-2 rounded-lg text-slate-600">โควตาที่ใช้ไป: <span id="userBQuotaUsed">0</span> ครั้ง</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Penalty / Rules Card -->
+                <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl space-y-2">
+                    <h4 class="font-bold text-sm text-amber-800 flex items-center gap-1.5">
+                        <i class="fa-solid fa-scroll text-amber-600"></i> กติกา & บทลงโทษประจำเดือน
+                    </h4>
+                    <ul class="text-xs text-amber-900 space-y-1.5 pl-4 list-disc font-light">
+                        <li>โควตาที่ไม่ใช้จะถูกล้างทุกสิ้นเดือน (ไม่ทบยอด)</li>
+                        <li>คนที่ทำ Daily Checklist ได้น้อยกว่า/หรือเกินโควต้าในแต่ละเดือน **ต้องโดนปรับครั้งละ 50 บาทเข้ากองกลาง** 🍲</li>
+                        <li>สิทธิ์ Wildcard 1 ครั้ง/เดือน สำหรับวันสำคัญ 🎁</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-3 bg-slate-50 border-t border-slate-100 text-center text-[11px] text-slate-400">
+            Couple Tracker &bull; Sync Data locally on your device
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-5 w-full max-w-xs space-y-4 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-user-pen text-pink-500 mr-1"></i> ตั้งค่าชื่อและโปรไฟล์</h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-sm"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">ชื่อผู้ใช้ A (พี่เซ้น)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="inputUserAName" class="flex-1 px-3 py-1.5 border rounded-xl focus:outline-none focus:border-pink-500">
+                        <input type="text" id="inputUserAAvatar" class="w-12 text-center border rounded-xl">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">ชื่อผู้ใช้ B (น้องแก้ม)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="inputUserBName" class="flex-1 px-3 py-1.5 border rounded-xl focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="inputUserBAvatar" class="w-12 text-center border rounded-xl">
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 border-t space-y-2">
+                <button onclick="saveProfileSettings()" class="w-full bg-pink-500 text-white font-medium text-xs py-2.5 rounded-xl hover:bg-pink-600 transition">บันทึกตั้งค่า</button>
+                <button onclick="resetAllData()" class="w-full bg-slate-100 text-red-500 font-medium text-xs py-2 rounded-xl hover:bg-red-50 transition">ล้างข้อมูลทั้งหมด (Reset)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // Default State Structure
+        const DEFAULT_STATE = {
+            profiles: {
+                userA: { name: 'พี่เซ้น', avatar: '👩‍❤️‍👨' },
+                userB: { name: 'น้องแก้ม', avatar: '👩‍❤️‍💋‍👨' }
+            },
+            habits: [
+                { id: 'h1', title: '🚿 อาบน้ำก่อน 19:30 น.', icon: '🚿' },
+                { id: 'h2', title: '🛌 เข้านอนก่อน 23:00 น.', icon: '🛌' },
+                { id: 'h3', title: '💧 ดื่มน้ำครบ 2 ลิตร', icon: '💧' }
+            ],
+            quotas: [
+                { id: 'q1', title: '🧋 น้ำหวาน', icon: '🧋', max: 15, unit: 'แก้ว' },
+                { id: 'q2', title: '🍦 ขนม / ของหวาน', icon: '🍦', max: 4, unit: 'ครั้ง' },
+                { id: 'q3', title: '🥘 บุฟเฟต์ / ชาบู', icon: '🥘', max: 2, unit: 'มื้อ' },
+                { id: 'q4', title: '🏃‍♀️ ออกกำลังกาย', icon: '🏃‍♀️', max: 10, unit: 'วัน' }
+            ],
+            dailyLogs: {}, // dateString -> { userA: { h1: true, note: '' }, userB: { ... } }
+            quotaLogs: {}  // monthString -> { userA: { q1: 2 }, userB: { q1: 1 } }
+        };
+
+        let state = JSON.parse(localStorage.getItem('coupleTrackerState')) || DEFAULT_STATE;
+        let currentUser = 'userA';
+        let currentTab = 'daily';
+
+        // Init App
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default date to today YYYY-MM-DD
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dailyDatePicker').value = today;
+
+            // Set default month YYYY-MM
+            const currentMonth = today.substring(0, 7);
+            document.getElementById('quotaMonthPicker').value = currentMonth;
+
+            updateProfileUI();
+            loadDailyData();
+            loadQuotaData();
+            updateSummaryData();
+        });
+
+        function saveState() {
+            localStorage.setItem('coupleTrackerState', JSON.stringify(state));
+            updateSummaryData();
+        }
+
+        // --- PROFILE & USER SWITCHING ---
+        function switchUser(userKey) {
+            currentUser = userKey;
+            updateProfileUI();
+            loadDailyData();
+            loadQuotaData();
+        }
+
+        function updateProfileUI() {
+            const userA = state.profiles.userA;
+            const userB = state.profiles.userB;
+
+            document.getElementById('userANameDisplay').innerText = userA.name;
+            document.getElementById('userAAvatar').innerText = userA.avatar;
+            document.getElementById('userBNameDisplay').innerText = userB.name;
+            document.getElementById('userBAvatar').innerText = userB.avatar;
+
+            const btnA = document.getElementById('userATab');
+            const btnB = document.getElementById('userBTab');
+
+            if (currentUser === 'userA') {
+                btnA.className = "py-2.5 px-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition duration-200 bg-white text-pink-600 shadow-md";
+                btnB.className = "py-2.5 px-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition duration-200 text-white hover:bg-white/10";
+            } else {
+                btnB.className = "py-2.5 px-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition duration-200 bg-white text-indigo-600 shadow-md";
+                btnA.className = "py-2.5 px-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition duration-200 text-white hover:bg-white/10";
+            }
+        }
+
+        // --- TAB SWITCHING ---
+        function switchMainTab(tabName) {
+            currentTab = tabName;
+            document.getElementById('tabDaily').classList.add('hidden');
+            document.getElementById('tabQuota').classList.add('hidden');
+            document.getElementById('tabSummary').classList.add('hidden');
+
+            document.getElementById('tabDailyBtn').className = "flex-1 py-3 text-center border-b-2 border-transparent hover:text-slate-700 flex justify-center items-center gap-1.5 text-xs font-medium text-slate-500";
+            document.getElementById('tabQuotaBtn').className = "flex-1 py-3 text-center border-b-2 border-transparent hover:text-slate-700 flex justify-center items-center gap-1.5 text-xs font-medium text-slate-500";
+            document.getElementById('tabSummaryBtn').className = "flex-1 py-3 text-center border-b-2 border-transparent hover:text-slate-700 flex justify-center items-center gap-1.5 text-xs font-medium text-slate-500";
+
+            if (tabName === 'daily') {
+                document.getElementById('tabDaily').classList.remove('hidden');
+                document.getElementById('tabDailyBtn').className = "flex-1 py-3 text-center border-b-2 border-pink-500 text-pink-600 flex justify-center items-center gap-1.5 text-xs font-semibold";
+            } else if (tabName === 'quota') {
+                document.getElementById('tabQuota').classList.remove('hidden');
+                document.getElementById('tabQuotaBtn').className = "flex-1 py-3 text-center border-b-2 border-indigo-500 text-indigo-600 flex justify-center items-center gap-1.5 text-xs font-semibold";
+            } else if (tabName === 'summary') {
+                document.getElementById('tabSummary').classList.remove('hidden');
+                document.getElementById('tabSummaryBtn').className = "flex-1 py-3 text-center border-b-2 border-amber-500 text-amber-600 flex justify-center items-center gap-1.5 text-xs font-semibold";
+                updateSummaryData();
+            }
+        }
+
+        // --- DAILY CHECKLIST LOGIC ---
+        function loadDailyData() {
+            const selectedDate = document.getElementById('dailyDatePicker').value;
+            const habitsContainer = document.getElementById('habitsContainer');
+            habitsContainer.innerHTML = '';
+
+            const dayLog = (state.dailyLogs[selectedDate] && state.dailyLogs[selectedDate][currentUser]) || {};
+
+            state.habits.forEach(habit => {
+                const isChecked = !!dayLog[habit.id];
+                const itemEl = document.createElement('div');
+                itemEl.className = `p-3.5 rounded-2xl border transition duration-200 flex items-center justify-between ${isChecked ? 'bg-pink-50/80 border-pink-200' : 'bg-slate-50 border-slate-200'}`;
+
+                itemEl.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">${habit.icon}</span>
+                        <span class="text-xs font-medium text-slate-700">${habit.title}</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" onchange="toggleHabit('${habit.id}', this.checked)" ${isChecked ? 'checked' : ''} class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
+                    </label>
+                `;
+                habitsContainer.appendChild(itemEl);
+            });
+
+            // Note input
+            document.getElementById('dailyNoteInput').value = dayLog.note || '';
+
+            // Calculate simple streak count for this user
+            calculateStreak();
+        }
+
+        function toggleHabit(habitId, checked) {
+            const date = document.getElementById('dailyDatePicker').value;
+            if (!state.dailyLogs[date]) state.dailyLogs[date] = {};
+            if (!state.dailyLogs[date][currentUser]) state.dailyLogs[date][currentUser] = {};
+
+            state.dailyLogs[date][currentUser][habitId] = checked;
+            saveState();
+
+            if (checked) {
+                confetti({ particleCount: 30, spread: 60, origin: { y: 0.8 } });
+            }
+            loadDailyData();
+        }
+
+        function saveDailyNote() {
+            const date = document.getElementById('dailyDatePicker').value;
+            const noteText = document.getElementById('dailyNoteInput').value;
+
+            if (!state.dailyLogs[date]) state.dailyLogs[date] = {};
+            if (!state.dailyLogs[date][currentUser]) state.dailyLogs[date][currentUser] = {};
+
+            state.dailyLogs[date][currentUser].note = noteText;
+            saveState();
+        }
+
+        function toggleAddHabitForm() {
+            document.getElementById('addHabitForm').classList.toggle('hidden');
+        }
+
+        function addNewHabit() {
+            const title = document.getElementById('newHabitTitle').value.trim();
+            const icon = document.getElementById('newHabitIcon').value.trim() || '✨';
+
+            if (!title) return;
+
+            const newId = 'h_' + Date.now();
+            state.habits.push({ id: newId, title: `${icon} ${title}`, icon: icon });
+            saveState();
+
+            document.getElementById('newHabitTitle').value = '';
+            toggleAddHabitForm();
+            loadDailyData();
+        }
+
+        function calculateStreak() {
+            let streak = 0;
+            let checkDate = new Date();
+
+            for (let i = 0; i < 30; i++) {
+                const dateStr = checkDate.toISOString().split('T')[0];
+                const dayLog = state.dailyLogs[dateStr] && state.dailyLogs[dateStr][currentUser];
+                if (dayLog && Object.values(dayLog).some(v => v === true)) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else if (i === 0) {
+                    // Check yesterday if today hasn't been checked yet
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            document.getElementById('streakBadge').innerText = `🔥 ${streak} วันติด`;
+        }
+
+        // --- QUOTA TRACKER LOGIC ---
+        function loadQuotaData() {
+            const selectedMonth = document.getElementById('quotaMonthPicker').value;
+            const container = document.getElementById('quotaCardsContainer');
+            container.innerHTML = '';
+
+            const monthLog = (state.quotaLogs[selectedMonth] && state.quotaLogs[selectedMonth][currentUser]) || {};
+
+            state.quotas.forEach(quota => {
+                const currentVal = monthLog[quota.id] || 0;
+                const percent = Math.min(100, Math.round((currentVal / quota.max) * 100));
+
+                let barColor = 'bg-indigo-500';
+                if (percent >= 100) barColor = 'bg-red-500';
+                else if (percent >= 75) barColor = 'bg-amber-500';
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2.5";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">${quota.icon}</span>
+                            <div>
+                                <h4 class="font-medium text-xs text-slate-800">${quota.title}</h4>
+                                <p class="text-[11px] text-slate-400">เป้าหมายสูงสุด: ${quota.max} ${quota.unit}</p>
+                            </div>
+                        </div>
+                        <!-- Stepper Buttons -->
+                        <div class="flex items-center bg-white rounded-xl border border-slate-200 p-1 gap-2 shadow-sm">
+                            <button onclick="updateQuotaVal('${quota.id}', -1)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center">-</button>
+                            <span class="text-xs font-semibold text-slate-700 min-w-[24px] text-center">${currentVal}</span>
+                            <button onclick="updateQuotaVal('${quota.id}', 1)" class="w-6 h-6 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-xs flex items-center justify-center">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="space-y-1">
+                        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                            <div class="${barColor} h-2 rounded-full transition-all duration-300" style="width: ${percent}%"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+                            <span>ใช้ไปแล้ว ${currentVal} ${quota.unit}</span>
+                            <span>${percent}%</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateQuotaVal(quotaId, delta) {
+            const selectedMonth = document.getElementById('quotaMonthPicker').value;
+            if (!state.quotaLogs[selectedMonth]) state.quotaLogs[selectedMonth] = {};
+            if (!state.quotaLogs[selectedMonth][currentUser]) state.quotaLogs[selectedMonth][currentUser] = {};
+
+            let currentVal = state.quotaLogs[selectedMonth][currentUser][quotaId] || 0;
+            currentVal = Math.max(0, currentVal + delta);
+
+            state.quotaLogs[selectedMonth][currentUser][quotaId] = currentVal;
+            saveState();
+            loadQuotaData();
+        }
+
+        function toggleAddQuotaForm() {
+            document.getElementById('addQuotaForm').classList.toggle('hidden');
+        }
+
+        function addNewQuotaItem() {
+            const title = document.getElementById('newQuotaTitle').value.trim();
+            const icon = document.getElementById('newQuotaIcon').value.trim() || '🧋';
+            const max = parseInt(document.getElementById('newQuotaMax').value) || 5;
+            const unit = document.getElementById('newQuotaUnit').value.trim() || 'ครั้ง';
+
+            if (!title) return;
+
+            const newId = 'q_' + Date.now();
+            state.quotas.push({ id: newId, title: `${icon} ${title}`, icon: icon, max: max, unit: unit });
+            saveState();
+
+            document.getElementById('newQuotaTitle').value = '';
+            toggleAddQuotaForm();
+            loadQuotaData();
+        }
+
+        // --- SUMMARY & LEADERBOARD LOGIC ---
+        function updateSummaryData() {
+            document.getElementById('userASummaryName').innerText = state.profiles.userA.name;
+            document.getElementById('userASummaryAvatar').innerText = state.profiles.userA.avatar;
+            document.getElementById('userBSummaryName').innerText = state.profiles.userB.name;
+            document.getElementById('userBSummaryAvatar').innerText = state.profiles.userB.avatar;
+
+            // Count total checked days for each user across all logged dates
+            let scoreA
+ = 0, scoreB = 0;
+            Object.values(state.dailyLogs).forEach(day => {
+                if (day.userA && Object.values(day.userA).some(v => v === true)) scoreA++;
+                if (day.userB && Object.values(day.userB).some(v => v === true)) scoreB++;
+            });
+
+            document.getElementById('userADailyScore').innerText = scoreA;
+            document.getElementById('userBDailyScore').innerText = scoreB;
+
+            // Count total quotas used this month
+            const currentMonth = document.getElementById('quotaMonthPicker').value || new Date().toISOString().substring(0, 7);
+            let quotaCountA = 0, quotaCountB = 0;
+
+            const monthData = state.quotaLogs[currentMonth];
+            if (monthData) {
+                if (monthData.userA) quotaCountA = Object.values(monthData.userA).reduce((a, b) => a + b, 0);
+                if (monthData.userB) quotaCountB = Object.values(monthData.userB).reduce((a, b) => a + b, 0);
+            }
+
+            document.getElementById('userAQuotaUsed').innerText = quotaCountA;
+            document.getElementById('userBQuotaUsed').innerText = quotaCountB;
+        }
+
+        // --- SETTINGS MODAL LOGIC ---
+        function openSettingsModal() {
+            document.getElementById('inputUserAName').value = state.profiles.userA.name;
+            document.getElementById('inputUserAAvatar').value = state.profiles.userA.avatar;
+            document.getElementById('inputUserBName').value = state.profiles.userB.name;
+            document.getElementById('inputUserBAvatar').value = state.profiles.userB.avatar;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function saveProfileSettings() {
+            state.profiles.userA.name = document.getElementById('inputUserAName').value.trim() || 'พี่เซ้น';
+            state.profiles.userA.avatar = document.getElementById('inputUserAAvatar').value.trim() || '👩‍❤️‍👨';
+            state.profiles.userB.name = document.getElementById('inputUserBName').value.trim() || 'น้องแก้ม';
+            state.profiles.userB.avatar = document.getElementById('inputUserBAvatar').value.trim() || '👩‍❤️‍💋‍👨';
+
+            saveState();
+            updateProfileUI();
+            closeSettingsModal();
+        }
+
+        function resetAllData() {
+            if (confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้นใช่หรือไม่?')) {
+                localStorage.removeItem('coupleTrackerState');
+                state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                saveState();
+                updateProfileUI();
+                loadDailyData();
+                loadQuotaData();
+                closeSettingsModal();
+            }
+        }
+    </script>
+</body>
+</html>
