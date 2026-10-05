@@ -68,7 +68,7 @@
                     <span id="userANameDisplay">พี่เซ้น</span>
                 </button>
                 <button id="userBTab" onclick="switchUser('userB')" class="py-2.5 px-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition duration-200">
-                    <span id="userBAvatar">👩‍❤️‍💋‍👨</span>
+                    <span id="userBAvatar">👩‍❤️‍‍💋‍👨</span>
                     <span id="userBNameDisplay">น้องแก้ม</span>
                 </button>
             </div>
@@ -169,7 +169,7 @@
                         </div>
                     </div>
                     <div class="bg-indigo-50/90 p-3.5 rounded-2xl border border-indigo-100 text-center shadow-sm">
-                        <span id="userBSummaryAvatar" class="text-2xl block mb-1">👩‍❤️‍💋‍👨</span>
+                        <span id="userBSummaryAvatar" class="text-2xl block mb-1">👩‍❤️️‍💋‍👨</span>
                         <h4 id="userBSummaryName" class="font-bold text-sm text-slate-800">น้องแก้ม</h4>
                         <div class="mt-2 space-y-1 text-xs">
                             <div class="bg-white py-1 px-2 rounded-lg text-indigo-600 font-medium border border-indigo-100 shadow-xs">Daily Checklist: <span id="userBDailyScore">0</span> วัน</div>
@@ -211,14 +211,14 @@
                     <label class="block font-medium text-slate-600 mb-1">ชื่อผู้ใช้ A (พี่เซ้น)</label>
                     <div class="flex gap-2">
                         <input type="text" id="inputUserAName" class="flex-1 px-3 py-1.5 border rounded-xl focus:outline-none focus:border-pink-500">
-                        <input type="text" id="inputUserAAvatar" class="w-12 text-center border rounded-xl">
+                        <input type="text" id="inputUserAAvatar" class="w-12 text-center border rounded-xl" placeholder="Emoji/URL">
                     </div>
                 </div>
                 <div>
                     <label class="block font-medium text-slate-600 mb-1">ชื่อผู้ใช้ B (น้องแก้ม)</label>
                     <div class="flex gap-2">
                         <input type="text" id="inputUserBName" class="flex-1 px-3 py-1.5 border rounded-xl focus:outline-none focus:border-indigo-500">
-                        <input type="text" id="inputUserBAvatar" class="w-12 text-center border rounded-xl">
+                        <input type="text" id="inputUserBAvatar" class="w-12 text-center border rounded-xl" placeholder="Emoji/URL">
                     </div>
                 </div>
             </div>
@@ -262,7 +262,7 @@
             quotaLogs: {}
         };
 
-        let state = DEFAULT_STATE;
+        let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
         let currentUser = localStorage.getItem('couple_tracker_user') || 'userA';
         let currentTab = 'daily';
 
@@ -276,19 +276,25 @@
                 const data = snapshot.val();
                 if (data) {
                     state = data;
-                    if (!state.habits) state.habits = DEFAULT_STATE.habits;
-                    if (!state.quotas) state.quotas = DEFAULT_STATE.quotas;
+                    // ตรวจสอบและ Fallback ทุก Key เพื่อไม่ให้ข้อมูลสูญหายหรือพังหากโหนดใดโหนดหนึ่งเป็น Null
+                    if (!state.profiles) state.profiles = JSON.parse(JSON.stringify(DEFAULT_STATE.profiles));
+                    if (!state.habits) state.habits = JSON.parse(JSON.stringify(DEFAULT_STATE.habits));
+                    if (!state.quotas) state.quotas = JSON.parse(JSON.stringify(DEFAULT_STATE.quotas));
                     if (!state.dailyLogs) state.dailyLogs = {};
                     if (!state.quotaLogs) state.quotaLogs = {};
                 } else {
-                    db.set(DEFAULT_STATE);
+                    state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                    db.set(state);
                 }
                 refreshUI();
             });
         });
 
+        // ฟังก์ชันสั่งเซฟข้อมูล State รวมขึ้น Firebase Cloud แบบ Realtime
         function saveState() {
-            db.set(state);
+            if (typeof db !== 'undefined' && db) {
+                db.set(state).catch(err => console.error("Firebase save error:", err));
+            }
         }
 
         function refreshUI() {
@@ -306,7 +312,7 @@
 
         function renderAvatar(avatarStr) {
             if (avatarStr && (avatarStr.startsWith('http://') || avatarStr.startsWith('https://'))) {
-                return `<img src="${avatarStr}" class="w-7 h-7 rounded-full object-cover inline-block">`;
+                return `<img src="${avatarStr}" class="w-7 h-7 rounded-full object-cover inline-block border border-white/50">`;
             }
             return avatarStr || '👤';
         }
@@ -319,6 +325,7 @@
             document.getElementById('userAAvatar').innerHTML = renderAvatar(userA.avatar);
             document.getElementById('userBNameDisplay').innerText = userB.name;
             document.getElementById('userBAvatar').innerHTML = renderAvatar(userB.avatar);
+            
             const btnA = document.getElementById('userATab');
             const btnB = document.getElementById('userBTab');
 
@@ -436,7 +443,9 @@
             if (!title) return;
 
             const newId = 'h_' + Date.now();
+            if (!state.habits) state.habits = [];
             state.habits.push({ id: newId, title: title, icon: icon });
+            
             saveState();
 
             document.getElementById('newHabitTitle').value = '';
@@ -474,6 +483,11 @@
             container.innerHTML = '';
 
             const monthLog = (state.quotaLogs && state.quotaLogs[selectedMonth] && state.quotaLogs[selectedMonth][currentUser]) || {};
+
+            if (!state.quotas || state.quotas.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">ยังไม่มีโควตาประจำเดือน</p>`;
+                return;
+            }
 
             state.quotas.forEach(quota => {
                 const currentVal = monthLog[quota.id] || 0;
@@ -527,10 +541,9 @@
 
             state.quotaLogs[selectedMonth][currentUser][quotaId] = currentVal;
 
-            // อัปเดตการแสดงผลหน้าจอทันที ไม่ต้องรอปิง Cloud
+            // อัปเดตหน้าจอทันที + สั่ง Sync ขึ้น Firebase Cloud
             loadQuotaData();
             updateSummaryData();
-
             saveState();
         }
 
@@ -547,12 +560,15 @@
             if (!title) return;
 
             const newId = 'q_' + Date.now();
+            if (!state.quotas) state.quotas = [];
             state.quotas.push({ id: newId, title: title, icon: icon, max: max, unit: unit });
+            
             saveState();
 
             document.getElementById('newQuotaTitle').value = '';
             toggleAddQuotaForm();
             loadQuotaData();
+            updateSummaryData();
         }
 
         function updateSummaryData() {
@@ -596,7 +612,7 @@
             document.getElementById('inputUserAName').value = state.profiles?.userA?.name || 'พี่เซ้น';
             document.getElementById('inputUserAAvatar').value = state.profiles?.userA?.avatar || '👩‍❤️‍👨';
             document.getElementById('inputUserBName').value = state.profiles?.userB?.name || 'น้องแก้ม';
-            document.getElementById('inputUserBAvatar').value = state.profiles?.userB?.avatar || '👩‍❤️️‍💋‍👨';
+            document.getElementById('inputUserBAvatar').value = state.profiles?.userB?.avatar || '👩‍❤️‍💋‍👨';
             document.getElementById('settingsModal').classList.remove('hidden');
         }
 
@@ -605,19 +621,22 @@
         }
 
         function saveProfileSettings() {
-            if (!state.profiles) state.profiles = DEFAULT_STATE.profiles;
+            if (!state.profiles) state.profiles = JSON.parse(JSON.stringify(DEFAULT_STATE.profiles));
+            
             state.profiles.userA.name = document.getElementById('inputUserAName').value.trim() || 'พี่เซ้น';
             state.profiles.userA.avatar = document.getElementById('inputUserAAvatar').value.trim() || '👩‍❤️‍👨';
             state.profiles.userB.name = document.getElementById('inputUserBName').value.trim() || 'น้องแก้ม';
             state.profiles.userB.avatar = document.getElementById('inputUserBAvatar').value.trim() || '👩‍❤️‍💋‍👨';
 
             saveState();
+            refreshUI();
             closeSettingsModal();
         }
 
         function resetAllData() {
             if (confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้นใช่หรือไม่?')) {
-                db.set(DEFAULT_STATE);
+                state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                db.set(state);
                 closeSettingsModal();
             }
         }
