@@ -49,10 +49,10 @@
                 <div class="flex items-center gap-2">
                     <img src="https://i.ibb.co/Ng16fnDw/IMG-4816.jpg" class="w-10 h-10 rounded-xl object-cover shadow-sm">
                     <div>
-                        <h1 class="font-bold text-lg leading-tight">สมุดบันทึกพี่เซ้น น้องแก้ม</h1>
+                        <h1 class="font-bold text-lg leading-tight">พี่เซ้น น้องแก้ม</h1>
                         <p class="text-xs text-pink-100 font-light flex items-center gap-1">
                             <span id="syncStatus" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            Online
+                            Realtime Sync Online
                         </p>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
             </button>
         </div>
 
-        <!-- Content Area: ใส่สีขาวโปร่งแสงเพื่อให้เห็นรูปหลังจางๆ แต่ตัวหนังสือคมชัด -->
+        <!-- Content Area: โปร่งแสง ตัวหนังสือคมชัด -->
         <div class="p-4 flex-1 overflow-y-auto bg-white/85 backdrop-blur-md relative z-10">
 
             <!-- TAB 1: DAILY CHECKLIST -->
@@ -156,7 +156,7 @@
                 <div class="text-center bg-gradient-to-r from-pink-500 to-indigo-600 text-white p-5 rounded-3xl shadow-md">
                     <span class="text-4xl block mb-1">🏆</span>
                     <h3 class="font-bold text-lg">สรุปผล</h3>
-                    <p class="text-xs text-pink-100 font-light mt-0.5">ประจำเดือนแบบ Real-time!</p>
+                    <p class="text-xs text-pink-100 font-light mt-0.5">ข้อมูลซิงก์ตรงกันแบบ Real-time!</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -184,9 +184,7 @@
                     </h4>
                     <ul class="text-xs text-amber-900 space-y-1.5 pl-4 list-disc font-light">
                         <li>โควตาที่ไม่ใช้จะถูกล้างทุกสิ้นเดือน (ไม่ทบยอด)</li>
-                        <li>คนที่ทำ Daily Checklist ได้น้อยกว่า2/3 **ต้องโดนปรับวันละ 50 บาทเข้ากองกลาง** </li>
-                        <li>คนที่ทำ Quota Tracker เกินโควต้าในแต่ละเดือน **ต้องโดนปรับครั้งละ 50 บาทเข้ากองกลาง** </li>
-                        <li>คนที่ทำ Quota Tracker ได้น้อยที่สุดในแต่ละเดือนจะเป็นผู้ชนะ **คนที่แพ้จะต้องเลี้ยงมื้อใหญ่ 1 มื้อตามที่ผู้ชนะอยากกิน** 🍲</li>
+                        <li>คนที่ทำ Daily Checklist ได้น้อยกว่า/หรือเกินโควต้าในแต่ละเดือน **ต้องโดนปรับครั้งละ 50 บาทเข้ากองกลาง** 🍲</li>
                         <li>สิทธิ์ Wildcard 1 ครั้ง/เดือน สำหรับวันสำคัญ 🎁</li>
                     </ul>
                 </div>
@@ -194,7 +192,7 @@
         </div>
 
         <div class="p-3 bg-white/90 backdrop-blur-md border-t border-slate-200/60 text-center text-[11px] text-slate-500 font-medium relative z-10">
-            Tracker &bull; Cloud Realtime Database Enabled
+            Couple Tracker &bull; Cloud Realtime Database Enabled
         </div>
     </div>
 
@@ -211,14 +209,14 @@
                     <label class="block font-medium text-slate-600 mb-1">ชื่อผู้ใช้ A (พี่เซ้น)</label>
                     <div class="flex gap-2">
                         <input type="text" id="inputUserAName" class="flex-1 px-3 py-1.5 border rounded-xl focus:outline-none focus:border-pink-500">
-                        <input type="text" id="inputUserAAvatar" class="w-12 text-center border rounded-xl">
+                        <input type="text" id="inputUserAAvatar" class="w-24 text-xs px-2 border rounded-xl" placeholder="URL รูปโปรไฟล์">
                     </div>
                 </div>
                 <div>
                     <label class="block font-medium text-slate-600 mb-1">ชื่อผู้ใช้ B (น้องแก้ม)</label>
                     <div class="flex gap-2">
                         <input type="text" id="inputUserBName" class="flex-1 px-3 py-1.5 border rounded-xl focus:outline-none focus:border-indigo-500">
-                        <input type="text" id="inputUserBAvatar" class="w-12 text-center border rounded-xl">
+                        <input type="text" id="inputUserBAvatar" class="w-24 text-xs px-2 border rounded-xl" placeholder="URL รูปโปรไฟล์">
                     </div>
                 </div>
             </div>
@@ -231,12 +229,11 @@
     </div>
 
     <script>
-        // --- REALTIME CLOUD DATABASE CONFIG (Public Shared DB for Couples) ---
+        // --- REALTIME CLOUD DATABASE CONFIG ---
         const firebaseConfig = {
             databaseURL: "https://eiei-51849-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
  
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -244,7 +241,7 @@
 
         const DEFAULT_STATE = {
             profiles: {
-                userA: { name: 'พี่เซ้น', avatar: '👩‍❤️‍👨' },
+                userA: { name: 'พี่เซ้น', avatar: 'https://i.ibb.co/gMxGsqnB/IMG-0082.jpg' },
                 userB: { name: 'น้องแก้ม', avatar: '👩‍❤️‍💋‍👨' }
             },
             habits: [
@@ -271,7 +268,6 @@
             document.getElementById('dailyDatePicker').value = today;
             document.getElementById('quotaMonthPicker').value = today.substring(0, 7);
 
-            // Listen to Realtime updates from Firebase Cloud
             db.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -306,7 +302,7 @@
 
         function renderAvatar(avatarStr) {
             if (avatarStr && (avatarStr.startsWith('http://') || avatarStr.startsWith('https://'))) {
-                return `<img src="${avatarStr}" class="w-7 h-7 rounded-full object-cover inline-block">`;
+                return `<img src="${avatarStr}" class="w-7 h-7 rounded-full object-cover inline-block shadow-sm">`;
             }
             return avatarStr || '👤';
         }
@@ -319,6 +315,7 @@
             document.getElementById('userAAvatar').innerHTML = renderAvatar(userA.avatar);
             document.getElementById('userBNameDisplay').innerText = userB.name;
             document.getElementById('userBAvatar').innerHTML = renderAvatar(userB.avatar);
+            
             const btnA = document.getElementById('userATab');
             const btnB = document.getElementById('userBTab');
 
@@ -361,7 +358,7 @@
 
             const dayLog = (state.dailyLogs && state.dailyLogs[selectedDate] && state.dailyLogs[selectedDate][currentUser]) || {};
 
-            state.habits.forEach(habit => {
+            (state.habits || DEFAULT_STATE.habits).forEach(habit => {
                 const isChecked = !!dayLog[habit.id];
                 const itemEl = document.createElement('div');
                 itemEl.className = `p-3.5 rounded-2xl border transition duration-200 flex items-center justify-between shadow-xs ${isChecked ? 'bg-pink-50/90 border-pink-200' : 'bg-white/90 border-slate-200/80'}`;
@@ -419,6 +416,7 @@
 
             if (!title) return;
 
+            if (!state.habits) state.habits = DEFAULT_STATE.habits;
             const newId = 'h_' + Date.now();
             state.habits.push({ id: newId, title: `${icon} ${title}`, icon: icon });
             saveState();
@@ -452,8 +450,9 @@
             container.innerHTML = '';
 
             const monthLog = (state.quotaLogs && state.quotaLogs[selectedMonth] && state.quotaLogs[selectedMonth][currentUser]) || {};
+            const quotaList = state.quotas || DEFAULT_STATE.quotas;
 
-            state.quotas.forEach(quota => {
+            quotaList.forEach(quota => {
                 const currentVal = monthLog[quota.id] || 0;
                 const percent = Math.min(100, Math.round((currentVal / quota.max) * 100));
 
@@ -473,9 +472,9 @@
                             </div>
                         </div>
                         <div class="flex items-center bg-slate-50 rounded-xl border border-slate-200 p-1 gap-2 shadow-xs">
-                            <button onclick="updateQuotaVal('${quota.id}', -1)" class="w-6 h-6 rounded-lg bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center border border-slate-200">-</button>
+                            <button onclick="updateQuotaVal('${quota.id}', -1)" class="w-6 h-6 rounded-lg bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center border border-slate-200 cursor-pointer">-</button>
                             <span class="text-xs font-semibold text-slate-700 min-w-[24px] text-center">${currentVal}</span>
-                            <button onclick="updateQuotaVal('${quota.id}', 1)" class="w-6 h-6 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-xs flex items-center justify-center border border-indigo-100">+</button>
+                            <button onclick="updateQuotaVal('${quota.id}', 1)" class="w-6 h-6 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-xs flex items-center justify-center border border-indigo-100 cursor-pointer">+</button>
                         </div>
                     </div>
                     <div class="space-y-1">
@@ -517,6 +516,7 @@
 
             if (!title) return;
 
+            if (!state.quotas) state.quotas = DEFAULT_STATE.quotas;
             const newId = 'q_' + Date.now();
             state.quotas.push({ id: newId, title: `${icon} ${title}`, icon: icon, max: max, unit: unit });
             saveState();
@@ -560,7 +560,7 @@
 
         function openSettingsModal() {
             document.getElementById('inputUserAName').value = state.profiles?.userA?.name || 'พี่เซ้น';
-            document.getElementById('inputUserAAvatar').value = state.profiles?.userA?.avatar || '👩‍❤️‍👨';
+            document.getElementById('inputUserAAvatar').value = state.profiles?.userA?.avatar || 'https://i.ibb.co/gMxGsqnB/IMG-0082.jpg';
             document.getElementById('inputUserBName').value = state.profiles?.userB?.name || 'น้องแก้ม';
             document.getElementById('inputUserBAvatar').value = state.profiles?.userB?.avatar || '👩‍❤️‍💋‍👨';
             document.getElementById('settingsModal').classList.remove('hidden');
@@ -573,7 +573,7 @@
         function saveProfileSettings() {
             if (!state.profiles) state.profiles = DEFAULT_STATE.profiles;
             state.profiles.userA.name = document.getElementById('inputUserAName').value.trim() || 'พี่เซ้น';
-            state.profiles.userA.avatar = document.getElementById('inputUserAAvatar').value.trim() || '👩‍❤️‍👨';
+            state.profiles.userA.avatar = document.getElementById('inputUserAAvatar').value.trim() || 'https://i.ibb.co/gMxGsqnB/IMG-0082.jpg';
             state.profiles.userB.name = document.getElementById('inputUserBName').value.trim() || 'น้องแก้ม';
             state.profiles.userB.avatar = document.getElementById('inputUserBAvatar').value.trim() || '👩‍❤️‍💋‍👨';
 
